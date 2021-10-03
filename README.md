@@ -4,9 +4,17 @@ Projeto de extracao das remuneracoes dos funcionarios da Prefeitura de Caxias do
 
 ![logo-1](https://user-images.githubusercontent.com/36780203/124398507-67fda200-dcec-11eb-9c6a-803bd3f71201.png)
 
-#Como ?
+#Como foi feito ?
 Extração através de criação do arquivo .py, conectado direto à API de remuneracoes disponibilizada pela prefeitura de Caxias do Sul.
 Nesta versão 1, consolido apenas por mes/ano em um arquivo .csv, o qual é lido através do Power BI, onde exibo o front.
+
+#Como rodar ?
+Pre Req: Ter o python instalado :)
+Rodar: > git clone <caminho>
+No arquivo extrator.py 
+  1- altere os parametros paramMonth e paramYear para o que deseja extrair.
+  2- altere o parametro pathRede para definir onde voce deseja salvar o arquivo csv
+  3- salve e rode.
 
 Seguem algumas telas:
 
