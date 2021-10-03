@@ -1,109 +1,77 @@
 import requests, csv
 from datetime import datetime
+import utilities
 
-#Qual o mes que voce quer ?
 paramMonth = 5
-#e de qual ano ?
 paramYear = 2021
 
-if paramMonth < 10:
-    paramMonthStr = str (paramMonth)
-    paramMonthStr = paramMonthStr.zfill (2) #completa com zero
-else:
-    paramMonthStr = str (paramMonth)
-
-
-tipoRemuneracao = 'mensal'
-paramUrlLimit = '/?limit=1&offset=' #limite de 1 registro
-paramOffset = 0 #o ideal seria capturar o total de registros no records
-
-#capturar o numero de registros atual
-URL = 'https://remuneracoes.caxias.rs.gov.br/api/'+str(paramYear)+'/'+str(paramMonthStr)+'/01/'+str(tipoRemuneracao)+str(paramUrlLimit)+str(paramOffset)
-print (URL)
-
-people1 = requests.get(URL)
-people_json1  = people1.json()
-totalFuncionarios = people_json1['response']['total']
-
-paramOffsetLoop = totalFuncionarios
-#agora que eu já tenho o total de registros da remuneração do mes, começo o loop
-
-#funcao para remover os brackets 
-def removebrack(valor):
-   var_rem = (str(valor).replace('[','').replace(']',''))
-   return var_rem
-
 #export to csv
-with open('/Users/mauriciobrandalise/Projects/prefa/files_remunera/remunera_'+str (paramYear) + str (paramMonthStr)+'.csv', 'w') as f:
+with open('/Users/mauriciobrandalise/Projects/prefa/files_remunera/remunera_'+str (paramYear) + str(utilities.periodo(paramMonth, paramYear))+'.csv', 'w') as f:
 #with open('D:/workspace/personal/dev/prefeitura_caxiasdosul/remunera_'+str (paramYear) + str (paramMonthStr)+'_parte2.csv', 'w') as f:
     theWriter = csv.writer(f)
     theWriter.writerow(['tipoRemuneracao','paramYear','paramMonthStr','periodoWorked','countFunc','id','nome','admissao','cargo','padrao_cargo','funcao_gratificada',
         'total_bruto','auxilio_alimentacao','auxilio_creche','antecipacao_ferias','indenizacoes_diversas','licenca_premio_compensada','descontos','redutor','total_liquido'])
 
-
     countFunc = 0
-    while countFunc < totalFuncionarios:
+    while countFunc < utilities.totalFuncionarios(paramMonth, paramYear):
         # capturar o numero de registros atual
-        URL_loop = 'https://remuneracoes.caxias.rs.gov.br/api/' + str (paramYear) + '/' + str (paramMonthStr) + '/01/' + str (
-            tipoRemuneracao) + str (paramUrlLimit) + str (countFunc)
+        URL_loop = 'https://remuneracoes.caxias.rs.gov.br/api/' + str (paramYear) + '/' + str(utilities.periodo(paramMonth, paramYear)) + '/01/' + str (
+            utilities.tipoRemuneracao) + str (utilities.paramUrlLimit) + str (countFunc)
         people1 = requests.get (URL_loop)
         people_json1 = people1.json ()
 
         #declaro a lista que vai receber todos os registros vindos do endpoint
-        my_list = []
+        lista_func = []
 
         #To print the names of people and folha com o total bruto
         for i in people_json1['response']['records']:
-            my_list.append(tipoRemuneracao)
-            my_list.append (paramYear)
-            my_list.append (paramMonthStr)
-            my_list.append ("10"+"/"+paramMonthStr+"/"+str(paramYear)) #primeiro dia do mes trabalhado
-            my_list.append(countFunc)
-            my_list.append (i['id'])
-            my_list.append (i['nome'])
+            lista_func.append(utilities.tipoRemuneracao)
+            lista_func.append (paramYear)
+            lista_func.append (str(utilities.periodo(paramMonth, paramYear)))
+            lista_func.append ("10"+"/"+str(utilities.periodo(paramMonth, paramYear)+"/"+str(paramYear))) #primeiro dia do mes trabalhado
+            lista_func.append (countFunc)
+            lista_func.append (i['id'])
+            lista_func.append (i['nome'])
 
             admissao = [i['admissao']]
-            my_list.append (admissao[:9])
+            lista_func.append (admissao[:9])
 
 
-            my_list.append (i['cargo'])
-            my_list.append (i['padrao_cargo'])
-            my_list.append (i['funcao_gratificada'])
-            #my_list.append (i['tempo_servico'])
+            lista_func.append (i['cargo'])
+            lista_func.append (i['padrao_cargo'])
+            lista_func.append (i['funcao_gratificada'])
+            #lista_func.append (i['tempo_servico'])
             total_bruto = [i['folha']['total_bruto']]
 
-            my_list.append (removebrack(total_bruto))
+            lista_func.append (utilities.removebrack(total_bruto))
 
             auxilio_alimentacao = [i['folha']['auxilio_alimentacao']]
-            my_list.append (removebrack(auxilio_alimentacao))
+            lista_func.append (utilities.removebrack(auxilio_alimentacao))
 
             auxilio_creche = [i['folha']['auxilio_creche']]
-            my_list.append (removebrack(auxilio_creche))
+            lista_func.append (utilities.removebrack(auxilio_creche))
 
             antecipacao_ferias = [i['folha']['antecipacao_ferias']]
-            my_list.append (removebrack(antecipacao_ferias))
+            lista_func.append (utilities.removebrack(antecipacao_ferias))
 
             indenizacoes_diversas = [i['folha']['indenizacoes_diversas']]
-            my_list.append (removebrack(indenizacoes_diversas))
+            lista_func.append (utilities.removebrack(indenizacoes_diversas))
 
             licenca_premio_compensada = [i['folha']['licenca_premio_compensada']]
-            my_list.append (removebrack(licenca_premio_compensada))
+            lista_func.append (utilities.removebrack(licenca_premio_compensada))
 
             descontos = [i['folha']['descontos']]
-            my_list.append (removebrack(descontos))
+            lista_func.append (utilities.removebrack(descontos))
           
             redutor = [i['folha']['redutor']]
-            my_list.append (removebrack(redutor))
+            lista_func.append (utilities.removebrack(redutor))
 
             total_liquido = [i['folha']['total_liquido']]
-            my_list.append (removebrack(total_liquido))
+            lista_func.append (utilities.removebrack(total_liquido))
 
-            theWriter.writerow(my_list)
-            print ("---------------------")
-            print (countFunc)
+            theWriter.writerow(lista_func)
+            print (i['id']+" "+str(i['nome']))
             print ("---------------------")
 
         #decrease registros
             countFunc = countFunc + 1
-
-        #hora de sair do loop, pois acabaram os registros ! '''
