@@ -4,9 +4,10 @@ import utilities
 
 paramMonth = 5
 paramYear = 2021
+pathRede = '/Users/xxx/Projects/prefa/files_remunera/'
 
 #export to csv
-with open('/Users/mauriciobrandalise/Projects/prefa/files_remunera/remunera_'+str (paramYear) + str(utilities.periodo(paramMonth, paramYear))+'.csv', 'w') as f:
+with open(pathRede+'remunera_'+str (paramYear) + str(utilities.periodo(paramMonth, paramYear))+'.csv', 'w') as f:
 #with open('D:/workspace/personal/dev/prefeitura_caxiasdosul/remunera_'+str (paramYear) + str (paramMonthStr)+'_parte2.csv', 'w') as f:
     theWriter = csv.writer(f)
     theWriter.writerow(['tipoRemuneracao','paramYear','paramMonthStr','periodoWorked','countFunc','id','nome','admissao','cargo','padrao_cargo','funcao_gratificada',
